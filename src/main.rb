@@ -1,48 +1,53 @@
 ##
 # main.rb
+#
+# The main logic for the update automation
 ##
 
 require 'yaml'
 require 'shellwords'
 require 'colorize'
 
-unless File.exist? File.join(BASEDIR, 'config.yml')
+# Load the list of plugins from config.yml
+if File.exist? File.join(BASEDIR, 'config.yml')
+  plugins = YAML.load_file(File.join(BASEDIR, 'config.yml'))['plugins']
+else
   puts "Error:".red + " config.yml seems to be missing."
   exit 1
-else
-  plugins = YAML.load_file(File.join(BASEDIR, 'config.yml'))['plugins']
 end
 
+# Loop all plugins and update them
 plugins.each do |plugin|
-  name = plugin[0]
+  name = plugin[0] # name of the plugin
   config = plugin[1]
 
-  gitsrc = config['git']
-  svnsrc = config['svn']
+  gitsrc = config['git'].split(' ')[0] # remote git url
+  gitbranch = config['git'].split(' ')[1] || '' # remote tracking branch (optional)
 
-  gitdir = File.join(BASEDIR, 'git', name)
-  svndir = File.join(BASEDIR, 'svn', name)
+  svnsrc = config['svn'] # remote svn url
 
+  gitdir = File.join(BASEDIR, 'git', name) # where the git repo will be cloned locally
+  svndir = File.join(BASEDIR, 'svn', name) # where the svn repo will be cloned locally
+
+  # Clone or update the git repo
   if Dir.exist? gitdir
     puts "Pulling git repository for #{name} at #{gitdir}..."
-    result = system "cd #{gitdir.shellescape} && git pull #{gitsrc}"
+    command = "cd #{gitdir.shellescape} && git pull #{gitsrc} #{gitbranch}"
   else
     puts "Cloning git repository for #{name} to #{gitdir}..."
-    result = system "git clone #{gitsrc} #{gitdir.shellescape}"
+    command = "git clone #{gitsrc} #{gitdir.shellescape}"
+    command += " --branch #{gitbranch}" unless gitbranch == ''
   end
 
+  result = system(command)
   unless result
     puts "Warning:".yellow + " Couldn't fetch git repo for #{name}, skipping updates..."
     next
   end
 
-  if Dir.exist? svndir
-    puts "Updating svn repository for #{name} at #{svndir}..."
-    system "svn co #{svnsrc} #{svndir.shellescape}"
-  else
-    puts "Checking out svn repository for #{name} to #{svndir}..."
-    system "svn co #{svnsrc} #{svndir.shellescape}"
-  end
+  # Check out the wordpress.org svn repo
+  puts "Checking out svn repository for #{name} to #{svndir}..."
+  result = system "svn co #{svnsrc} #{svndir.shellescape}"
 
   unless result
     puts "Warning:".yellow + " Couldn't fetch svn repo for #{name}, skipping updates..."
