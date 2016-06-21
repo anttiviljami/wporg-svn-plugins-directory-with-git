@@ -1,4 +1,5 @@
 # Up-to-Date WordPress.org Plugins
+[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
 
 This repository provides tools to automate pushing updates from git to wordpress.org svn repositories
 
