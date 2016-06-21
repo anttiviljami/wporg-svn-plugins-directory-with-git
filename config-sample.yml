@@ -1,0 +1,12 @@
+##
+# Filename: config.yml
+#
+# List of wordpress.org plugins
+##
+plugins:
+  wp-pdf-templates:
+    git: git@github.com:anttiviljami/wp-pdf-templates.git
+    svn: https://plugins.svn.wordpress.org/wp-pdf-templates/
+  wp-libre-form:
+    git: git@github.com:anttiviljami/wp-libre-form.git
+    svn: https://plugins.svn.wordpress.org/wp-libre-form/
