@@ -42,17 +42,17 @@ plugins.each do |plugin|
     command += " --branch #{gitbranch}" unless gitbranch == ''
   end
 
-  result = system(command)
-  unless result
+  system(command)
+  unless $?
     notice "Warning:".yellow + " Couldn't fetch git repo for #{name}, skipping updates..."
     next
   end
 
   # Check out the wordpress.org svn repo
   notice "Checking out svn repository for #{name} to #{svndir}..."
-  result = system "svn co #{svnsrc} #{svndir.shellescape}"
+  system "svn co #{svnsrc} #{svndir.shellescape}"
 
-  unless result
+  unless $?
     notice "Warning:".yellow + " Couldn't fetch svn repo for #{name}, skipping updates..."
     next
   end
@@ -62,23 +62,25 @@ plugins.each do |plugin|
   FileUtils.cp_r FileList["#{gitdir}/**"].exclude('.git'), File.join(svndir, 'trunk')
 
   # Get commit message from git
-  commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.trim
+  commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.strip
 
   # Get latest release from git
-  release = `cd #{gitdir.shellescape} && git describe --tags $(git rev-list --tags --max-count=1)`
+  release = `cd #{gitdir.shellescape} && git describe --tags $(git rev-list --tags --max-count=1)`.strip
 
   # Tag latest release for svn if there is a tag
   if $?
     notice "Tagging latest release #{release} for #{name}..."
-    result = system "cd #{svndir.shellescape} && svn rm --force tags/#{release}"
-    result = system "cd #{svndir.shellescape} && svn cp trunk tags/#{release}"
+    system "cd #{svndir.shellescape} && svn rm --force tags/#{release}"
+    system "cd #{svndir.shellescape} && svn cp trunk tags/#{release}"
   end
 
   # Finally, print svn stat
-  result = system "cd #{svndir.shellescape} && svn stat"
+  system "cd #{svndir.shellescape} && svn stat"
 
   # Commit svn
   notice "Committing to wordpress.org svn plugin directory with message: \"#{commitmsg}\""
-  result = system "cd #{svndir.shellescape} && svn ci -m \"#{commitmsg}\""
+  system "cd #{svndir.shellescape} && svn ci -m \"#{commitmsg}\""
+
+  puts "Success:".green + " #{name} has been updated."
 end
 
