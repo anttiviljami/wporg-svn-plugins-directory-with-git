@@ -61,6 +61,9 @@ plugins.each do |plugin|
   notice "Updating svn trunk from latest git commit for #{name}..."
   FileUtils.cp_r FileList["#{gitdir}/**"].exclude('.git'), File.join(svndir, 'trunk')
 
+  # Add any files not yet present in svn
+  system "cd #{svndir.shellescape} && svn add trunk/*"
+
   # Get commit message from git
   commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.strip
 
