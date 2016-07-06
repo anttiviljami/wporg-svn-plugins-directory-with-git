@@ -62,7 +62,7 @@ plugins.each do |plugin|
   FileUtils.cp_r FileList["#{gitdir}/**"].exclude('.git'), File.join(svndir, 'trunk')
 
   # Add any files not yet present in svn
-  system "cd #{svndir.shellescape} && svn add trunk/*"
+  system "cd #{svndir.shellescape} && svn add trunk/* 2> /dev/null"
 
   # Get commit message from git
   commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.strip
@@ -73,7 +73,7 @@ plugins.each do |plugin|
   # Tag latest release for svn if there is a tag
   if $?
     notice "Tagging latest release #{release} for #{name}..."
-    system "cd #{svndir.shellescape} && svn rm --force tags/#{release}"
+    system "cd #{svndir.shellescape} && svn rm --force tags/#{release} &> /dev/null"
     system "cd #{svndir.shellescape} && svn cp trunk tags/#{release}"
   end
 
