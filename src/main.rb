@@ -61,6 +61,22 @@ plugins.each do |plugin|
   notice "Updating svn trunk from latest git commit for #{name}..."
   FileUtils.cp_r FileList["#{gitdir}/**"].exclude('.git'), File.join(svndir, 'trunk')
 
+  # Run a composer install if composer.json is present in trunk
+  if File.exist? File.join(svndir, 'trunk', 'composer.json')
+    notice "A composer.json file is present for #{name}. Running composer install..."
+    system "cd #{svndir.shellescape}/trunk && composer install"
+  end
+
+  # Run a npm scripts if package.json is present
+  if File.exist? File.join(svndir, 'trunk', 'package.json')
+    notice "A package.json file is present for #{name}. Running npm install --production..."
+    system "cd #{svndir.shellescape}/trunk && npm install --production"
+
+    # This can be used to run preprocessors gulp, grunt, webpack etc.
+    notice "Checking for npm script 'build' to run... "
+    system "cd #{svndir.shellescape}/trunk && npm run build 2> /dev/null"
+  end
+
   # Add any files not yet present in svn
   system "cd #{svndir.shellescape} && svn add trunk/* 2> /dev/null"
 

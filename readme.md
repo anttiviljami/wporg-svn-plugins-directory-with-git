@@ -9,6 +9,8 @@ The `update-scripts.rb` utility will clone both svn and git repos under the svn/
 
 Once both repos are present and *up-to-date*, it will copy over any files from the git repo to the svn trunk and tag the newest release.
 
+The script will also attempt to run a `composer install` and run npm scripts with `npm run build` if composer.json and/or package.json files are present, to bundle any files needed to the svn repository.
+
 Finally the script will commit to the wordpress.org svn directory using the latest git commit message.
 
 ## Installation
