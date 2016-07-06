@@ -3,6 +3,14 @@
 
 This repository provides tools to automate pushing updates from git to wordpress.org svn repositories
 
+## How it works
+
+The `update-scripts.rb` utility will clone both svn and git repos under the svn/ and git/ directories.
+
+Once both repos are present and *up-to-date*, it will copy over any files from the git repo to the svn trunk and tag the newest release.
+
+Finally the script will commit to the wordpress.org svn directory using the latest git commit message.
+
 ## Installation
 
 Clone this repository, run bundle install
