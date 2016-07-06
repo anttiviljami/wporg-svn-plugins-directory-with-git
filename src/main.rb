@@ -5,14 +5,17 @@
 ##
 
 require 'yaml'
+require 'rake'
 require 'shellwords'
 require 'colorize'
+
+require File.join(BASEDIR, '/lib/helpers.rb')
 
 # Load the list of plugins from config.yml
 if File.exist? File.join(BASEDIR, 'config.yml')
   plugins = YAML.load_file(File.join(BASEDIR, 'config.yml'))['plugins']
 else
-  puts "Error:".red + " config.yml seems to be missing."
+  notice "Error:".red + " config.yml seems to be missing."
   exit 1
 end
 
@@ -31,27 +34,51 @@ plugins.each do |plugin|
 
   # Clone or update the git repo
   if Dir.exist? gitdir
-    puts "Pulling git repository for #{name} at #{gitdir}..."
+    notice "Pulling git repository for #{name} at #{gitdir}..."
     command = "cd #{gitdir.shellescape} && git pull #{gitsrc} #{gitbranch}"
   else
-    puts "Cloning git repository for #{name} to #{gitdir}..."
+    notice "Cloning git repository for #{name} to #{gitdir}..."
     command = "git clone #{gitsrc} #{gitdir.shellescape}"
     command += " --branch #{gitbranch}" unless gitbranch == ''
   end
 
   result = system(command)
   unless result
-    puts "Warning:".yellow + " Couldn't fetch git repo for #{name}, skipping updates..."
+    notice "Warning:".yellow + " Couldn't fetch git repo for #{name}, skipping updates..."
     next
   end
 
   # Check out the wordpress.org svn repo
-  puts "Checking out svn repository for #{name} to #{svndir}..."
+  notice "Checking out svn repository for #{name} to #{svndir}..."
   result = system "svn co #{svnsrc} #{svndir.shellescape}"
 
   unless result
-    puts "Warning:".yellow + " Couldn't fetch svn repo for #{name}, skipping updates..."
+    notice "Warning:".yellow + " Couldn't fetch svn repo for #{name}, skipping updates..."
     next
   end
+
+  # Copy contents from git repo to svn trunk
+  notice "Updating svn trunk from latest git commit for #{name}..."
+  FileUtils.cp_r FileList["#{gitdir}/**"].exclude('.git'), File.join(svndir, 'trunk')
+
+  # Get commit message from git
+  commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.trim
+
+  # Get latest release from git
+  release = `cd #{gitdir.shellescape} && git describe --tags $(git rev-list --tags --max-count=1)`
+
+  # Tag latest release for svn if there is a tag
+  if $?
+    notice "Tagging latest release #{release} for #{name}..."
+    result = system "cd #{svndir.shellescape} && svn rm --force tags/#{release}"
+    result = system "cd #{svndir.shellescape} && svn cp trunk tags/#{release}"
+  end
+
+  # Finally, print svn stat
+  result = system "cd #{svndir.shellescape} && svn stat"
+
+  # Commit svn
+  notice "Committing to wordpress.org svn plugin directory with message: \"#{commitmsg}\""
+  result = system "cd #{svndir.shellescape} && svn ci -m \"#{commitmsg}\""
 end
 
