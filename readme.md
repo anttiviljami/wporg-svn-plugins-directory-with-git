@@ -1,7 +1,23 @@
 # Up-to-Date WordPress.org Plugins
-[![License](http://img.shields.io/:license-gpl3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0.html)
+![license](https://img.shields.io/badge/license-GPL3-blue.svg) ![VersionEye](https://img.shields.io/versioneye/d/ruby/rails.svg?maxAge=2592000)
 
 This repository provides tools to automate pushing updates from git to wordpress.org svn repositories
+
+## Installation
+
+Clone this repository, run bundle install
+
+```
+git clone https://github.com/anttiviljami/up-to-date-wp-plugins.git
+cd up-to-date-wp-plugins
+bundle install
+```
+
+## Requirements
+
+* Ruby >= 1.8
+* Git
+* Subversion
 
 ## Usage
 
@@ -23,7 +39,7 @@ Then, simply run the update-plugins.rb -script.
 $ ./update-plugins.rb
 ```
 
-### Example run
+## Screenshots
 
 Here's an example of how an update procedure might go.
 
