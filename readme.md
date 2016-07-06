@@ -1,4 +1,4 @@
-# Up-to-Date WordPress.org Plugins
+# WordPress.org SVN Plugin Directory With Git
 ![license](https://img.shields.io/badge/license-GPL3-blue.svg) ![VersionEye](https://img.shields.io/versioneye/d/ruby/rails.svg?maxAge=2592000)
 
 This repository provides tools to automate pushing updates from git to wordpress.org svn repositories
@@ -18,8 +18,8 @@ Finally the script will commit to the wordpress.org svn directory using the late
 Clone this repository, run bundle install
 
 ```
-git clone https://github.com/anttiviljami/up-to-date-wp-plugins.git
-cd up-to-date-wp-plugins
+git clone https://github.com/anttiviljami/wporg-svn-plugins-directory-with-git.git
+cd wporg-svn-plugins-directory-with-git
 bundle install
 ```
 
@@ -55,15 +55,15 @@ Here's an example of how an update procedure might go.
 
 ```
 $ ./update-plugins.rb
-----> Cloning git repository for wp-post-acl to /Users/antti/up-to-date-wp-plugins/git/wp-post-acl...
-Cloning into '/Users/antti/up-to-date-wp-plugins/git/wp-post-acl'...
+----> Cloning git repository for wp-post-acl to /Users/antti/wporg-svn-plugins-directory-with-git/git/wp-post-acl...
+Cloning into '/Users/antti/wporg-svn-plugins-directory-with-git/git/wp-post-acl'...
 remote: Counting objects: 71, done.
 remote: Compressing objects: 100% (3/3), done.
 remote: Total 71 (delta 0), reused 0 (delta 0), pack-reused 68
 Receiving objects: 100% (71/71), 425.35 KiB | 197.00 KiB/s, done.
 Resolving deltas: 100% (32/32), done.
 Checking connectivity... done.
-----> Checking out svn repository for wp-post-acl to /Users/antti/up-to-date-wp-plugins/svn/wp-post-acl...
+----> Checking out svn repository for wp-post-acl to ~/wporg-svn-plugins-directory-with-git/svn/wp-post-acl...
 Checked out revision 1449977.
 ----> Updating svn trunk from latest git commit for wp-post-acl...
 ----> Tagging latest release 1.0.1 for wp-post-acl...
