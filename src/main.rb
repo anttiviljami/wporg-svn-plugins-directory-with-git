@@ -100,6 +100,11 @@ plugins.each do |plugin|
   notice "Committing to wordpress.org svn plugin directory with message: \"#{commitmsg}\""
   system "cd #{svndir.shellescape} && svn ci -m \"#{commitmsg}\""
 
+  unless $?
+    notice "Warning:".yellow + " There was an issue committing #{name} to the wordpress.org repository, skipping updates..."
+    next
+  end
+
   puts "Success:".green + " #{name} has been updated."
 end
 
