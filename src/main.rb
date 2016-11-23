@@ -78,7 +78,7 @@ plugins.each do |plugin|
   end
 
   # Add any files not yet present in svn
-  system "cd #{svndir.shellescape} && svn add trunk/* 2> /dev/null"
+  system "cd #{svndir.shellescape} && svn add --force trunk/* 2> /dev/null"
 
   # Get commit message from git
   commitmsg = `cd #{gitdir.shellescape} && git log -1 --pretty=%B`.strip
